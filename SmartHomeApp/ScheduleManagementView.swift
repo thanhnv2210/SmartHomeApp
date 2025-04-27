@@ -9,43 +9,49 @@ import SwiftUI
 
 struct ScheduleManagementView: View {
     @Binding var device: Device
-    @State private var newSchedule: Device.Schedule = Device.Schedule(name: "", morning: "", evening: "", durationMinutes: 0)
+    @State private var newSchedule: Device.Schedule = Device.Schedule(name: "")
+    @State private var daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"] // Days of the week
 
     var body: some View {
         Form {
             Section(header: Text("Manage Schedules")) {
-                List {
-                    ForEach(device.schedules) { schedule in
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(schedule.name)
-                                Text("Morning: \(schedule.morning), Evening: \(schedule.evening), Duration: \(schedule.durationMinutes) mins")
-                            }
-                            Spacer()
-                            Button(action: {
-                                deleteSchedule(schedule) // Call delete function
-                            }) {
-                                Image(systemName: "trash")
-                                    .foregroundColor(.red)
-                            }
-                        }
+                ForEach(device.schedules) { schedule in
+                    VStack(alignment: .leading) {
+                        Text(schedule.name)
+                        Text("Start Time: \(formatTime(schedule.startTime))")
+                        Text("Duration: \(schedule.durationMinutes) minutes")
+                        Text("Days: \(schedule.selectedDays.joined(separator: ", "))")
                     }
-                    .onDelete(perform: deleteScheduleAt) // Allow deletion by swipe
                 }
-                
+
                 Section {
                     TextField("Schedule Name", text: $newSchedule.name)
-                    TextField("Morning Time", text: $newSchedule.morning)
-                        .keyboardType(.default)
 
-                    TextField("Evening Time", text: $newSchedule.evening)
-                        .keyboardType(.default)
+                    // Toggling each day of the week
+                    ForEach(daysOfWeek, id: \.self) { day in
+                        Toggle(day, isOn: Binding<Bool>(
+                            get: {
+                                newSchedule.selectedDays.contains(day)
+                            },
+                            set: { isSelected in
+                                if isSelected {
+                                    newSchedule.selectedDays.append(day)
+                                } else {
+                                    newSchedule.selectedDays.removeAll(where: { $0 == day })
+                                }
+                            }
+                        ))
+                    }
 
-                    TextField("Duration (mins)", value: $newSchedule.durationMinutes, formatter: NumberFormatter())
+                    // Time Picker for Start Time
+                    DatePicker("Start Time", selection: $newSchedule.startTime, displayedComponents: .hourAndMinute)
+
+                    // Input for Duration Minutes
+                    TextField("Duration (minutes)", value: $newSchedule.durationMinutes, formatter: NumberFormatter())
                         .keyboardType(.numberPad)
-                    
+
                     Button(action: {
-                        addSchedule() // Call add function
+                        addSchedule() // Add new schedule
                     }) {
                         Text("Add Schedule")
                     }
@@ -57,19 +63,13 @@ struct ScheduleManagementView: View {
 
     private func addSchedule() {
         device.schedules.append(newSchedule)
-        newSchedule = Device.Schedule(name: "", morning: "", evening: "", durationMinutes: 0) // Reset the form
+        newSchedule = Device.Schedule(name: "") // Reset the form for a new schedule
         // Here you would also want to update Firebase with the new schedule if applicable
     }
 
-    private func deleteSchedule(_ schedule: Device.Schedule) {
-        if let index = device.schedules.firstIndex(where: { $0.id == schedule.id }) {
-            device.schedules.remove(at: index)
-            // Also update Firebase if you've stored schedules there
-        }
-    }
-
-    private func deleteScheduleAt(offsets: IndexSet) {
-        device.schedules.remove(atOffsets: offsets)
-        // Also update Firebase accordingly
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "hh:mm a" // Format to show in 12-hour format
+        return formatter.string(from: date)
     }
 }

@@ -12,61 +12,68 @@ class DeviceService {
     private let ref = Database.database().reference().child("devices")
 
     // Load devices from Firebase
-        func loadDevices(completion: @escaping ([Device]) -> Void) {
-            ref.observeSingleEvent(of: .value) { snapshot in
-                var fetchedDevices: [Device] = []
-                let group = DispatchGroup() // Use DispatchGroup to wait for history fetching
+    func loadDevices(completion: @escaping ([Device]) -> Void) {
+        ref.observeSingleEvent(of: .value) { snapshot in
+            var fetchedDevices: [Device] = []
+            let group = DispatchGroup() // Use DispatchGroup to wait for history fetching
 
-                if let devicesDict = snapshot.value as? [String: Any] {
-                    for (key, value) in devicesDict {
-                        if let deviceData = value as? [String: Any],
-                           let name = deviceData["name"] as? String,
-                           let status = deviceData["status"] as? String,
-                           let lastWatered = deviceData["last_watered"] as? String {
+            if let devicesDict = snapshot.value as? [String: Any] {
+                for (key, value) in devicesDict {
+                    if let deviceData = value as? [String: Any],
+                       let name = deviceData["name"] as? String,
+                       let status = deviceData["status"] as? String,
+                       let lastWatered = deviceData["last_watered"] as? String {
+                        
+                        // Initialize an empty schedules array
+                        var schedules: [Device.Schedule] = []
+                        
+                        // Check if schedules exist in the device data
+                        if let scheduleData = deviceData["schedules"] as? [[String: Any]] {
+                            let dateFormatter = DateFormatter()
+                            dateFormatter.dateFormat = "hh:mm a" // Format for the start time
                             
-                            // Initialize an empty schedules array
-                            var schedules: [Device.Schedule] = []
-                            
-                            // Check if schedules exist
-                            if let scheduleData = deviceData["schedules"] as? [[String: Any]] { // Load schedules if present
-                                for scheduleDict in scheduleData {
-                                    if let scheduleName = scheduleDict["name"] as? String,
-                                       let morning = scheduleDict["morning"] as? String,
-                                       let evening = scheduleDict["evening"] as? String,
-                                       let durationMinutes = scheduleDict["duration_minutes"] as? Int {
-                                        let schedule = Device.Schedule(name: scheduleName, morning: morning, evening: evening, durationMinutes: durationMinutes)
-                                        schedules.append(schedule)
-                                    }
+                            for scheduleDict in scheduleData {
+                                if let scheduleName = scheduleDict["name"] as? String,
+                                   let selectedDays = scheduleDict["selectedDays"] as? [String],
+                                   let startTimeString = scheduleDict["startTime"] as? String,
+                                   let durationMinutes = scheduleDict["duration_minutes"] as? Int,
+                                   let startTime = dateFormatter.date(from: startTimeString) { // Convert string to Date
+                                    
+                                    let schedule = Device.Schedule(name: scheduleName, selectedDays: selectedDays, startTime: startTime, durationMinutes: durationMinutes)
+                                    schedules.append(schedule)
                                 }
                             }
+                        }
 
-                            let device = Device(
-                                deviceId: key, // Use the Firebase key as the deviceId
-                                name: name,
-                                status: status,
-                                lastWatered: lastWatered,
-                                schedules: schedules // Use the list of schedules (which may be empty)
-                            )
-                            
-                            // Optionally, fetch history for this device
-                            group.enter()
-                            self.fetchHistory(for: key) { history in
-                                var deviceWithHistory = device
-                                deviceWithHistory.history = history
-                                fetchedDevices.append(deviceWithHistory)
-                                group.leave()
-                            }
+                        // Create the Device object with the fetched data
+                        let device = Device(
+                            deviceId: key, // Use the Firebase key as the deviceId
+                            name: name,
+                            status: status,
+                            lastWatered: lastWatered,
+                            schedules: schedules // Use the list of schedules (which may be empty)
+                        )
+                        
+                        // Optionally, fetch history for this device
+                        group.enter()
+                        self.fetchHistory(for: key) { history in
+                            var deviceWithHistory = device
+                            deviceWithHistory.history = history
+                            fetchedDevices.append(deviceWithHistory)
+                            group.leave()
                         }
                     }
-
-                    group.notify(queue: .main) {
-                        completion(fetchedDevices) // Return all fetched devices
-                    }
-                } else {
-                    completion([]) // Return an empty array if fetch fails
                 }
+
+                // Notify completion when all histories have been fetched
+                group.notify(queue: .main) {
+                    completion(fetchedDevices) // Return all fetched devices
+                }
+            } else {
+                completion([]) // Return an empty array if fetch fails
             }
         }
+    }
     
     // Fetch history for a specific device
     public func fetchHistory(for deviceId: String, completion: @escaping ([String: Device.HistoryEntry]) -> Void) {

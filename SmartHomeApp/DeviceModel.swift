@@ -16,13 +16,20 @@ struct Device: Identifiable {
     var lastWatered: String
     var schedules: [Schedule] // Change to an array to hold multiple schedules
     var history: [String: HistoryEntry] = [:]
-
+    
     struct Schedule: Identifiable {
         var id: String { name } // Assuming name is unique for the schedule
         var name: String
-        var morning: String
-        var evening: String
-        var durationMinutes: Int
+        var selectedDays: [String] // Store selected days of the week (e.g., ["SUN", "MON"])
+        var startTime: Date // Store the start time as a Date
+        var durationMinutes: Int // Store the duration in minutes
+        
+        init(name: String, selectedDays: [String] = [], startTime: Date = Date(), durationMinutes: Int = 0) {
+            self.name = name
+            self.selectedDays = selectedDays
+            self.startTime = startTime
+            self.durationMinutes = durationMinutes
+        }
     }
 
     struct HistoryEntry {
