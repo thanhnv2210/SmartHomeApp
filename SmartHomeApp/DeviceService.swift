@@ -78,7 +78,7 @@ class DeviceService {
         }
     }
 
-    // Update device status in Firebase
+    // Method to update device status in Firebase
     func updateDeviceStatus(_ deviceId: String, status: String) {
         ref.child(deviceId).child("status").setValue(status) { error, _ in
             if let error = error {
@@ -88,14 +88,16 @@ class DeviceService {
             }
         }
     }
-    
-    // Method to update device name in Firebase
-    func updateDeviceName(_ deviceId: String, name: String) {
+
+    // Method to update device name in Firebase with a completion handler
+    func updateDeviceName(_ deviceId: String, name: String, completion: @escaping (Bool) -> Void) {
         ref.child(deviceId).child("name").setValue(name) { error, _ in
             if let error = error {
                 print("Error updating device name: \(error.localizedDescription)")
+                completion(false) // Indicate failure
             } else {
                 print("Device name updated successfully to \(name) for device ID: \(deviceId).")
+                completion(true) // Indicate success
             }
         }
     }

@@ -9,22 +9,34 @@ import SwiftUI
 
 struct DeviceDetailView: View {
     @State var device: Device // Use @State to modify the device in this view
-    
+    @State private var isEditing: Bool = false
+    @State private var updateMessage: String = ""
+
     var body: some View {
         Form {
             Section(header: Text("Device Info")) {
                 HStack {
-                    TextField("Device Name", text: Binding(
-                        get: { device.name },
-                        set: { device.name = $0 } // Update name inline
-                    ))
-                    
-                    // Button to update device name
-                    Button(action: {
-                        updateDeviceNameInFirebase()
-                    }) {
-                        Text("Update")
-                            .foregroundColor(.blue) // Or another color
+                    if isEditing {
+                        TextField("Device Name", text: Binding(
+                            get: { device.name },
+                            set: { device.name = $0 } // Update name inline
+                        ))
+                        
+                        Button(action: {
+                            updateDeviceNameInFirebase()
+                        }) {
+                            Text("Update")
+                                .foregroundColor(.blue)
+                        }
+                    } else {
+                        Text(device.name)
+                        Button(action: {
+                            isEditing.toggle() // Toggle edit mode
+                            updateMessage = "" // Clear any previous success message
+                        }) {
+                            Image(systemName: "pencil") // Edit icon
+                                .foregroundColor(.blue)
+                        }
                     }
                 }
                 
@@ -41,6 +53,13 @@ struct DeviceDetailView: View {
                             .cornerRadius(5) // Optional: round corners
                     }
                 }
+            }
+
+            // Display update message
+            if !updateMessage.isEmpty {
+                Text(updateMessage)
+                    .foregroundColor(.green)
+                    .padding()
             }
 
             Section(header: Text("Last Watered")) {
@@ -79,12 +98,18 @@ struct DeviceDetailView: View {
 
     private func updateDeviceNameInFirebase() {
         let deviceService = DeviceService()
-        deviceService.updateDeviceName(device.id, name: device.name) // Pass appropriate parameters to update name in the back-end
-        print("Updated device name to \(device.name) in Firebase.")
+        deviceService.updateDeviceName(device.id, name: device.name) { success in
+            if success {
+                updateMessage = "Device name updated successfully!" // Set success message
+                isEditing = false // Exit edit mode after successful update
+            } else {
+                updateMessage = "Failed to update device name." // Error message
+            }
+        }
     }
 
     private func updateDeviceStatusInFirebase() {
         let deviceService = DeviceService()
-        deviceService.updateDeviceStatus(device.id, status: device.status) // Pass appropriate parameters to update status in the back-end
+        deviceService.updateDeviceStatus(device.id, status: device.status) // Update status in Firebase
     }
 }
