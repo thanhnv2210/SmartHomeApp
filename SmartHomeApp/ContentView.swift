@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     @State private var deviceInfo: [String: Any] = [:]
@@ -22,6 +23,7 @@ struct ContentView: View {
             Text("Last Watered: \(deviceInfo["last_watered"] as? String ?? "N/A")")
 
             Button(action: {
+                print("readDeviceInfo...")
                 let firebaseManager = FirebaseManager()
                 firebaseManager.readDeviceInfo(deviceId: "device1") { info in
                     if let info = info {
@@ -40,6 +42,7 @@ struct ContentView: View {
             }
 
             Button(action: {
+                print("updateDeviceStatus...")
                 let firebaseManager = FirebaseManager()
                 firebaseManager.updateDeviceStatus(deviceId: "device1", status: "ON") { error in
                     if let error = error {
@@ -55,17 +58,23 @@ struct ContentView: View {
                     .foregroundColor(.white)
                     .cornerRadius(8)
             }
-            
+
             Text(statusMessage)
                 .padding()
                 .foregroundColor(.red)
         }
         .padding()
+        .onAppear {
+            // Initialize shake detection with a handler
+            MotionRecognizer.startShakeDetection {
+                self.logNetworkRequests()
+            }
+        }
     }
-}
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+    private func logNetworkRequests() {
+        // Log network requests and responses here
+        print("Shake detected: Logging network requests...")
+        // Here you can log actual network requests or any other relevant information
     }
 }
