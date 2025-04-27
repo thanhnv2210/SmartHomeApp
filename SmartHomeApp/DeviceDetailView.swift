@@ -65,11 +65,13 @@ struct DeviceDetailView: View {
             Section(header: Text("Last Watered")) {
                 Text(device.lastWatered)
             }
-
-            Section(header: Text("Schedule")) {
-                Text("Morning: \(device.schedule.morning)")
-                Text("Evening: \(device.schedule.evening)")
-                Text("Duration: \(device.schedule.durationMinutes) minutes")
+            
+            Section(header: Text("Schedule Management")) {
+                // Button to navigate to schedule management view
+                NavigationLink(destination: ScheduleManagementView(device: $device)) {
+                    Text("Manage Schedules")
+                        .foregroundColor(.blue)
+                }
             }
 
             Section(header: Text("History")) {

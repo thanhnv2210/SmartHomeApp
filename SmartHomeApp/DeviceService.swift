@@ -23,19 +23,26 @@ class DeviceService {
                        let name = deviceData["name"] as? String,
                        let status = deviceData["status"] as? String,
                        let lastWatered = deviceData["last_watered"] as? String,
-                       let scheduleData = deviceData["schedule"] as? [String: Any],
-                       let morning = scheduleData["morning"] as? String,
-                       let evening = scheduleData["evening"] as? String,
-                       let durationMinutes = scheduleData["duration_minutes"] as? Int {
-                        
-                        let schedule = Device.Schedule(morning: morning, evening: evening, durationMinutes: durationMinutes)
-                        
+                       let scheduleData = deviceData["schedules"] as? [[String: Any]] { // Updated for multiple schedules
+
+                        // Parse schedules
+                        var schedules: [Device.Schedule] = []
+                        for scheduleDict in scheduleData {
+                            if let scheduleName = scheduleDict["name"] as? String,
+                               let morning = scheduleDict["morning"] as? String,
+                               let evening = scheduleDict["evening"] as? String,
+                               let durationMinutes = scheduleDict["duration_minutes"] as? Int {
+                                let schedule = Device.Schedule(name: scheduleName, morning: morning, evening: evening, durationMinutes: durationMinutes)
+                                schedules.append(schedule)
+                            }
+                        }
+
                         let device = Device(
-                            deviceId: key, // Use the Firebase key as the deviceId
+                            deviceId: key,
                             name: name,
                             status: status,
                             lastWatered: lastWatered,
-                            schedule: schedule
+                            schedules: schedules // Use the list of schedules
                         )
                         
                         // Optionally, fetch history for this device
@@ -78,17 +85,6 @@ class DeviceService {
         }
     }
 
-    // Method to update device status in Firebase
-    func updateDeviceStatus(_ deviceId: String, status: String) {
-        ref.child(deviceId).child("status").setValue(status) { error, _ in
-            if let error = error {
-                print("Error updating device status: \(error.localizedDescription)")
-            } else {
-                print("Device status updated successfully to \(status) for device ID: \(deviceId).")
-            }
-        }
-    }
-
     // Method to update device name in Firebase with a completion handler
     func updateDeviceName(_ deviceId: String, name: String, completion: @escaping (Bool) -> Void) {
         ref.child(deviceId).child("name").setValue(name) { error, _ in
@@ -98,6 +94,17 @@ class DeviceService {
             } else {
                 print("Device name updated successfully to \(name) for device ID: \(deviceId).")
                 completion(true) // Indicate success
+            }
+        }
+    }
+
+    // Method to update device status in Firebase
+    func updateDeviceStatus(_ deviceId: String, status: String) {
+        ref.child(deviceId).child("status").setValue(status) { error, _ in
+            if let error = error {
+                print("Error updating device status: \(error.localizedDescription)")
+            } else {
+                print("Device status updated successfully to \(status) for device ID: \(deviceId).")
             }
         }
     }

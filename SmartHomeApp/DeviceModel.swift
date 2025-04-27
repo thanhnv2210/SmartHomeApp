@@ -14,10 +14,12 @@ struct Device: Identifiable {
     var name: String // Change this to var to allow modification
     var status: String // "ON" or "OFF"
     var lastWatered: String
-    var schedule: Schedule
+    var schedules: [Schedule] // Change to an array to hold multiple schedules
     var history: [String: HistoryEntry] = [:]
 
-    struct Schedule {
+    struct Schedule: Identifiable {
+        var id: String { name } // Assuming name is unique for the schedule
+        var name: String
         var morning: String
         var evening: String
         var durationMinutes: Int
