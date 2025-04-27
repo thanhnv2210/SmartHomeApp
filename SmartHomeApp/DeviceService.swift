@@ -69,7 +69,7 @@ class DeviceService {
         }
     
     // Fetch history for a specific device
-    private func fetchHistory(for deviceId: String, completion: @escaping ([String: Device.HistoryEntry]) -> Void) {
+    public func fetchHistory(for deviceId: String, completion: @escaping ([String: Device.HistoryEntry]) -> Void) {
         let ref = Database.database().reference().child("logHistory").child(deviceId)
         ref.observeSingleEvent(of: .value) { snapshot in
             var history: [String: Device.HistoryEntry] = [:]

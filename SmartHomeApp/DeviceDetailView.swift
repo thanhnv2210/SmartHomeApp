@@ -11,6 +11,9 @@ struct DeviceDetailView: View {
     @State var device: Device // Use @State to modify the device in this view
     @State private var isEditing: Bool = false
     @State private var updateMessage: String = ""
+    @State private var history: [String: Device.HistoryEntry] = [:] // To hold history for this device
+    @State private var isHistoryLoaded: Bool = false // To track if history has been loaded
+    @State private var isHistoryExpanded: Bool = false // To track if history section is expanded
 
     var body: some View {
         Form {
@@ -65,7 +68,7 @@ struct DeviceDetailView: View {
             Section(header: Text("Last Watered")) {
                 Text(device.lastWatered)
             }
-            
+
             Section(header: Text("Schedule Management")) {
                 // Button to navigate to schedule management view
                 NavigationLink(destination: ScheduleManagementView(device: $device)) {
@@ -73,19 +76,39 @@ struct DeviceDetailView: View {
                         .foregroundColor(.blue)
                 }
             }
-
-            Section(header: Text("History")) {
-                ForEach(device.history.keys.sorted(), id: \.self) { key in
-                    if let entry = device.history[key] {
-                        VStack(alignment: .leading) {
-                            Text("Date: \(key)")
-                            Text("Action: \(entry.action)")
-                            Text("Duration: \(entry.durationSeconds) seconds")
-                            Text("Status: \(entry.status)")
-                        }
-                        .padding(.vertical, 5)
-                    }
+            
+            Section(header: Text("Manage History")) {
+                Button(action: loadHistory) {
+                    Text(isHistoryLoaded ? "Reload History" : "Load History")
+                        .foregroundColor(.blue)
                 }
+
+                DisclosureGroup(
+                    isExpanded: $isHistoryExpanded,
+                    content: {
+                        // Conditionally show history items only if loaded
+                        if isHistoryLoaded {
+                            ForEach(history.keys.sorted(), id: \.self) { key in
+                                if let entry = history[key] {
+                                    VStack(alignment: .leading) {
+                                        Text("Date: \(key)")
+                                        Text("Action: \(entry.action)")
+                                        Text("Duration: \(entry.durationSeconds) seconds")
+                                        Text("Status: \(entry.status)")
+                                    }
+                                    .padding(.vertical, 5)
+                                }
+                            }
+                        } else {
+                            Text("No history available.")
+                                .foregroundColor(.gray)
+                        }
+                    },
+                    label: {
+                        Text("History Details")
+                            .font(.headline)
+                    }
+                )
             }
         }
         .navigationTitle(device.name)
@@ -107,6 +130,14 @@ struct DeviceDetailView: View {
             } else {
                 updateMessage = "Failed to update device name." // Error message
             }
+        }
+    }
+
+    private func loadHistory() {
+        let deviceService = DeviceService()
+        deviceService.fetchHistory(for: device.deviceId) { fetchedHistory in
+            self.history = fetchedHistory
+            isHistoryLoaded = true // Mark history as loaded
         }
     }
 
