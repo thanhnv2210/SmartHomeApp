@@ -56,8 +56,6 @@ class FirebaseManager {
     
     func loadUserProfile(userId: String, completion: @escaping (UserProfile?) -> Void) {
         ref.child("account").child(userId).observeSingleEvent(of: .value) { snapshot  in
-//            print(snapshot.key ?? "No key available")
-            print(snapshot)
             guard let profileData = snapshot.value as? [String: Any],
                   let accountName = profileData["accountName"] as? String,
                   let name = profileData["name"] as? String,
@@ -74,6 +72,7 @@ class FirebaseManager {
             }
             
             let userProfile = UserProfile(
+                id: id, 
                 accountName: accountName,
                 name: name,
                 createDate: createDate,
@@ -81,7 +80,6 @@ class FirebaseManager {
                 activeDevices: activeDevices,
                 maxDevices: maxDevices,
                 packageType: packageType,
-                id: id //snapshot.key.toInt() // Assuming you want to store the key as an id.
             )
             completion(userProfile) // Return the parsed user profile
         }
