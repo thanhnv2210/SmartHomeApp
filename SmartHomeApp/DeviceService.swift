@@ -12,58 +12,61 @@ class DeviceService {
     private let ref = Database.database().reference().child("devices")
 
     // Load devices from Firebase
-    func loadDevices(completion: @escaping ([Device]) -> Void) {
-        ref.observeSingleEvent(of: .value) { snapshot in
-            var fetchedDevices: [Device] = []
-            let group = DispatchGroup() // Use DispatchGroup to wait for history fetching
+        func loadDevices(completion: @escaping ([Device]) -> Void) {
+            ref.observeSingleEvent(of: .value) { snapshot in
+                var fetchedDevices: [Device] = []
+                let group = DispatchGroup() // Use DispatchGroup to wait for history fetching
 
-            if let devicesDict = snapshot.value as? [String: Any] {
-                for (key, value) in devicesDict {
-                    if let deviceData = value as? [String: Any],
-                       let name = deviceData["name"] as? String,
-                       let status = deviceData["status"] as? String,
-                       let lastWatered = deviceData["last_watered"] as? String,
-                       let scheduleData = deviceData["schedules"] as? [[String: Any]] { // Updated for multiple schedules
+                if let devicesDict = snapshot.value as? [String: Any] {
+                    for (key, value) in devicesDict {
+                        if let deviceData = value as? [String: Any],
+                           let name = deviceData["name"] as? String,
+                           let status = deviceData["status"] as? String,
+                           let lastWatered = deviceData["last_watered"] as? String {
+                            
+                            // Initialize an empty schedules array
+                            var schedules: [Device.Schedule] = []
+                            
+                            // Check if schedules exist
+                            if let scheduleData = deviceData["schedules"] as? [[String: Any]] { // Load schedules if present
+                                for scheduleDict in scheduleData {
+                                    if let scheduleName = scheduleDict["name"] as? String,
+                                       let morning = scheduleDict["morning"] as? String,
+                                       let evening = scheduleDict["evening"] as? String,
+                                       let durationMinutes = scheduleDict["duration_minutes"] as? Int {
+                                        let schedule = Device.Schedule(name: scheduleName, morning: morning, evening: evening, durationMinutes: durationMinutes)
+                                        schedules.append(schedule)
+                                    }
+                                }
+                            }
 
-                        // Parse schedules
-                        var schedules: [Device.Schedule] = []
-                        for scheduleDict in scheduleData {
-                            if let scheduleName = scheduleDict["name"] as? String,
-                               let morning = scheduleDict["morning"] as? String,
-                               let evening = scheduleDict["evening"] as? String,
-                               let durationMinutes = scheduleDict["duration_minutes"] as? Int {
-                                let schedule = Device.Schedule(name: scheduleName, morning: morning, evening: evening, durationMinutes: durationMinutes)
-                                schedules.append(schedule)
+                            let device = Device(
+                                deviceId: key, // Use the Firebase key as the deviceId
+                                name: name,
+                                status: status,
+                                lastWatered: lastWatered,
+                                schedules: schedules // Use the list of schedules (which may be empty)
+                            )
+                            
+                            // Optionally, fetch history for this device
+                            group.enter()
+                            self.fetchHistory(for: key) { history in
+                                var deviceWithHistory = device
+                                deviceWithHistory.history = history
+                                fetchedDevices.append(deviceWithHistory)
+                                group.leave()
                             }
                         }
-
-                        let device = Device(
-                            deviceId: key,
-                            name: name,
-                            status: status,
-                            lastWatered: lastWatered,
-                            schedules: schedules // Use the list of schedules
-                        )
-                        
-                        // Optionally, fetch history for this device
-                        group.enter()
-                        self.fetchHistory(for: key) { history in
-                            var deviceWithHistory = device
-                            deviceWithHistory.history = history
-                            fetchedDevices.append(deviceWithHistory)
-                            group.leave()
-                        }
                     }
-                }
 
-                group.notify(queue: .main) {
-                    completion(fetchedDevices) // Return all fetched devices
+                    group.notify(queue: .main) {
+                        completion(fetchedDevices) // Return all fetched devices
+                    }
+                } else {
+                    completion([]) // Return an empty array if fetch fails
                 }
-            } else {
-                completion([]) // Return an empty array if fetch fails
             }
         }
-    }
     
     // Fetch history for a specific device
     private func fetchHistory(for deviceId: String, completion: @escaping ([String: Device.HistoryEntry]) -> Void) {
