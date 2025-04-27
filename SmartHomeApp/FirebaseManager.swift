@@ -9,10 +9,11 @@ import Foundation
 import FirebaseDatabase
 
 class FirebaseManager {
-    private var ref: DatabaseReference!
+    static let shared = FirebaseManager() // Singleton instance
+    private let ref: DatabaseReference
 
     init() {
-        ref = Database.database().reference()
+        self.ref = Database.database().reference()
     }
 
     // Read device info
@@ -50,6 +51,39 @@ class FirebaseManager {
         
         ref.child("devices").child(deviceId).child("history").updateChildValues(historyNode) { error, _ in
             completion(error)
+        }
+    }
+    
+    func loadUserProfile(userId: String, completion: @escaping (UserProfile?) -> Void) {
+        ref.child("account").child(userId).observeSingleEvent(of: .value) { snapshot  in
+//            print(snapshot.key ?? "No key available")
+            print(snapshot)
+            guard let profileData = snapshot.value as? [String: Any],
+                  let accountName = profileData["accountName"] as? String,
+                  let name = profileData["name"] as? String,
+                  let id = profileData["id"] as? Int,
+                  let createDateString = profileData["create_datetime"] as? String,
+                  let status = profileData["status"] as? String,
+                  let activeDevices = profileData["active_devices"] as? Int,
+                  let maxDevices = profileData["max_devices"] as? Int,
+                  let packageType = profileData["package_type"] as? String,
+                  let createDate = ISO8601DateFormatter().date(from: createDateString) else {
+                print("⚠️ Failed to parse user profile for userId: \(userId)")
+                completion(nil) // Return nil if parsing fails
+                return
+            }
+            
+            let userProfile = UserProfile(
+                accountName: accountName,
+                name: name,
+                createDate: createDate,
+                status: status,
+                activeDevices: activeDevices,
+                maxDevices: maxDevices,
+                packageType: packageType,
+                id: id //snapshot.key.toInt() // Assuming you want to store the key as an id.
+            )
+            completion(userProfile) // Return the parsed user profile
         }
     }
 }
