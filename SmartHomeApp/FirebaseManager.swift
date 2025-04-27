@@ -59,7 +59,7 @@ class FirebaseManager {
             guard let profileData = snapshot.value as? [String: Any],
                   let accountName = profileData["accountName"] as? String,
                   let name = profileData["name"] as? String,
-                  let id = profileData["id"] as? Int,
+                  let id = profileData["id"] as? String,
                   let createDateString = profileData["create_datetime"] as? String,
                   let status = profileData["status"] as? String,
                   let activeDevices = profileData["active_devices"] as? Int,
@@ -82,6 +82,28 @@ class FirebaseManager {
                 packageType: packageType,
             )
             completion(userProfile) // Return the parsed user profile
+        }
+    }
+    
+    func saveUserProfile(userProfile: UserProfile, completion: @escaping (Bool) -> Void) {
+        let profileData: [String: Any] = [
+            "accountName": userProfile.accountName,
+            "name": userProfile.name,
+            "create_datetime": ISO8601DateFormatter().string(from: userProfile.createDate),
+            "status": userProfile.status,
+            "active_devices": userProfile.activeDevices,
+            "max_devices": userProfile.maxDevices,
+            "package_type": userProfile.packageType
+        ]
+        
+        ref.child("account").child(String(userProfile.id)).setValue(profileData) { error, _ in
+            if let error = error {
+                print("Error saving user profile: \(error.localizedDescription)")
+                completion(false) // Indicate failure
+            } else {
+                print("User profile saved successfully for user ID: \(userProfile.id)")
+                completion(true) // Indicate success
+            }
         }
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 struct UserProfile: Codable, Identifiable, Equatable {
-    var id: Int // Use the id provided in the JSON
+    var id: String // Use the id provided in the JSON
     var accountName: String
     var name: String
     var createDate: Date // Store the creation date as a Date
