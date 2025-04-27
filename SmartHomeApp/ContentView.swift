@@ -34,6 +34,7 @@ struct ContentView: View {
         let deviceService = DeviceService()
         deviceService.loadDevices { fetchedDevices in
             devices = fetchedDevices
+            print(devices)
         }
     }
 }

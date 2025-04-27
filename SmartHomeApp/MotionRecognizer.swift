@@ -5,7 +5,6 @@
 //  Created by Nguyen Van Thanh on 27/4/25.
 //
 
-import Foundation
 import UIKit
 
 class MotionRecognizer: UIResponder {
@@ -21,13 +20,16 @@ class MotionRecognizer: UIResponder {
         let motionRecognizer = MotionRecognizer()
         motionRecognizer.shakeHandler = handler
         
-        // Add to the current window's main view to detect shakes
-        if let window = UIApplication.shared.windows.first {
-            window.addGestureRecognizer(UITapGestureRecognizer(target: motionRecognizer, action: #selector(motionRecognizer.handleShake)))
+        // Use the current scene to add shake detection.
+        if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+            // Ensure we are only interacting with the first window in the scene.
+            if let window = scene.windows.first {
+                // Adding the motion recognizer to the window
+                window.addGestureRecognizer(UITapGestureRecognizer(target: motionRecognizer, action: #selector(motionRecognizer.handleShake)))
+            }
         }
     }
 
-    // A placeholder to trigger shake detection
     @objc func handleShake() {
         motionEnded(.motionShake, with: nil)
     }
