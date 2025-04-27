@@ -14,7 +14,7 @@ struct Device: Identifiable {
     var name: String // Change this to var to allow modification
     var status: String // "ON" or "OFF"
     var lastWatered: String
-    var schedules: [Schedule] // Change to an array to hold multiple schedules
+    var schedules: [String: Schedule] = [:]// Change to an array to hold multiple schedules
     var history: [String: HistoryEntry] = [:]
     
     struct Schedule: Identifiable {

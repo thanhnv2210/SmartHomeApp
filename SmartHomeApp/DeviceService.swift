@@ -23,27 +23,6 @@ class DeviceService {
                        let name = deviceData["name"] as? String,
                        let status = deviceData["status"] as? String,
                        let lastWatered = deviceData["last_watered"] as? String {
-                        
-                        // Initialize an empty schedules array
-                        var schedules: [Device.Schedule] = []
-                        
-                        // Check if schedules exist in the device data
-                        if let scheduleData = deviceData["schedules"] as? [[String: Any]] {
-                            let dateFormatter = DateFormatter()
-                            dateFormatter.dateFormat = "hh:mm a" // Format for the start time
-                            
-                            for scheduleDict in scheduleData {
-                                if let scheduleName = scheduleDict["name"] as? String,
-                                   let selectedDays = scheduleDict["selectedDays"] as? [String],
-                                   let startTimeString = scheduleDict["startTime"] as? String,
-                                   let durationMinutes = scheduleDict["duration_minutes"] as? Int,
-                                   let startTime = dateFormatter.date(from: startTimeString) { // Convert string to Date
-                                    
-                                    let schedule = Device.Schedule(name: scheduleName, selectedDays: selectedDays, startTime: startTime, durationMinutes: durationMinutes)
-                                    schedules.append(schedule)
-                                }
-                            }
-                        }
 
                         // Create the Device object with the fetched data
                         let device = Device(
@@ -51,17 +30,17 @@ class DeviceService {
                             name: name,
                             status: status,
                             lastWatered: lastWatered,
-                            schedules: schedules // Use the list of schedules (which may be empty)
+                            //schedules: schedules // Use the list of schedules (which may be empty)
                         )
-                        
+                        fetchedDevices.append(device)
                         // Optionally, fetch history for this device
-                        group.enter()
-                        self.fetchHistory(for: key) { history in
-                            var deviceWithHistory = device
-                            deviceWithHistory.history = history
-                            fetchedDevices.append(deviceWithHistory)
-                            group.leave()
-                        }
+//                        group.enter()
+//                        self.fetchHistory(for: key) { history in
+//                            var deviceWithHistory = device
+//                            deviceWithHistory.history = history
+//                            fetchedDevices.append(deviceWithHistory)
+//                            group.leave()
+//                        }
                     }
                 }
 

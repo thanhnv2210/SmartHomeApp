@@ -15,14 +15,14 @@ struct ScheduleManagementView: View {
     var body: some View {
         Form {
             Section(header: Text("Manage Schedules")) {
-                ForEach(device.schedules) { schedule in
-                    VStack(alignment: .leading) {
-                        Text(schedule.name)
-                        Text("Start Time: \(formatTime(schedule.startTime))")
-                        Text("Duration: \(schedule.durationMinutes) minutes")
-                        Text("Days: \(schedule.selectedDays.joined(separator: ", "))")
-                    }
-                }
+//                ForEach(device.schedules) { schedule in
+//                    VStack(alignment: .leading) {
+//                        Text(schedule.name)
+//                        Text("Start Time: \(formatTime(schedule.startTime))")
+//                        Text("Duration: \(schedule.durationMinutes) minutes")
+//                        Text("Days: \(schedule.selectedDays.joined(separator: ", "))")
+//                    }
+//                }
 
                 Section {
                     TextField("Schedule Name", text: $newSchedule.name)
@@ -50,22 +50,22 @@ struct ScheduleManagementView: View {
                     TextField("Duration (minutes)", value: $newSchedule.durationMinutes, formatter: NumberFormatter())
                         .keyboardType(.numberPad)
 
-                    Button(action: {
-                        addSchedule() // Add new schedule
-                    }) {
-                        Text("Add Schedule")
-                    }
+//                    Button(action: {
+//                        addSchedule() // Add new schedule
+//                    }) {
+//                        Text("Add Schedule")
+//                    }
                 }
             }
         }
         .navigationTitle("Schedules for \(device.name)")
     }
 
-    private func addSchedule() {
-        device.schedules.append(newSchedule)
-        newSchedule = Device.Schedule(name: "") // Reset the form for a new schedule
-        // Here you would also want to update Firebase with the new schedule if applicable
-    }
+//    private func addSchedule() {
+//        device.schedules.append(newSchedule)
+//        newSchedule = Device.Schedule(name: "") // Reset the form for a new schedule
+//        // Here you would also want to update Firebase with the new schedule if applicable
+//    }
 
     private func formatTime(_ date: Date) -> String {
         let formatter = DateFormatter()
