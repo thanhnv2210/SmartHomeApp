@@ -12,3 +12,6 @@ GoogleService-Info.plist
 .build/
 Packages/
 
+# Intellij
+.idea/
+
