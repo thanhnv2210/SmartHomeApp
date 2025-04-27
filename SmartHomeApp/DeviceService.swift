@@ -88,4 +88,15 @@ class DeviceService {
             }
         }
     }
+    
+    // Method to update device name in Firebase
+    func updateDeviceName(_ deviceId: String, name: String) {
+        ref.child(deviceId).child("name").setValue(name) { error, _ in
+            if let error = error {
+                print("Error updating device name: \(error.localizedDescription)")
+            } else {
+                print("Device name updated successfully to \(name) for device ID: \(deviceId).")
+            }
+        }
+    }
 }
