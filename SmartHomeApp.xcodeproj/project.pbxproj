@@ -6,6 +6,12 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		E8A94A5C2DBDCBD800E79349 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E8A94A5B2DBDCBD800E79349 /* GoogleService-Info.plist */; };
+		E8A94A5F2DBDCCBA00E79349 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = E8A94A5E2DBDCCBA00E79349 /* FirebaseAnalytics */; };
+		E8A94A612DBDCCBA00E79349 /* FirebaseDatabase in Frameworks */ = {isa = PBXBuildFile; productRef = E8A94A602DBDCCBA00E79349 /* FirebaseDatabase */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		E8A94A3F2DBDC64700E79349 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +33,7 @@
 		E8A94A312DBDC64600E79349 /* SmartHomeApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SmartHomeApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A94A3E2DBDC64700E79349 /* SmartHomeAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmartHomeAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A94A482DBDC64700E79349 /* SmartHomeAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmartHomeAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8A94A5B2DBDCBD800E79349 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +59,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8A94A612DBDCCBA00E79349 /* FirebaseDatabase in Frameworks */,
+				E8A94A5F2DBDCCBA00E79349 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,6 +88,7 @@
 				E8A94A412DBDC64700E79349 /* SmartHomeAppTests */,
 				E8A94A4B2DBDC64700E79349 /* SmartHomeAppUITests */,
 				E8A94A322DBDC64600E79349 /* Products */,
+				E8A94A5B2DBDCBD800E79349 /* GoogleService-Info.plist */,
 			);
 			sourceTree = "<group>";
 		};
@@ -112,6 +122,8 @@
 			);
 			name = SmartHomeApp;
 			packageProductDependencies = (
+				E8A94A5E2DBDCCBA00E79349 /* FirebaseAnalytics */,
+				E8A94A602DBDCCBA00E79349 /* FirebaseDatabase */,
 			);
 			productName = SmartHomeApp;
 			productReference = E8A94A312DBDC64600E79349 /* SmartHomeApp.app */;
@@ -195,6 +207,9 @@
 			);
 			mainGroup = E8A94A282DBDC64600E79349;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				E8A94A5D2DBDCCBA00E79349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = E8A94A322DBDC64600E79349 /* Products */;
 			projectDirPath = "";
@@ -212,6 +227,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E8A94A5C2DBDCBD800E79349 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -558,6 +574,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E8A94A5D2DBDCCBA00E79349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.12.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E8A94A5E2DBDCCBA00E79349 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E8A94A5D2DBDCCBA00E79349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		E8A94A602DBDCCBA00E79349 /* FirebaseDatabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E8A94A5D2DBDCCBA00E79349 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseDatabase;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E8A94A292DBDC64600E79349 /* Project object */;
 }
