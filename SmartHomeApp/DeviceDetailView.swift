@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DeviceDetailView: View {
+    var accountId: String
     @State var device: Device // Use @State to modify the device in this view
     @State private var isEditing: Bool = false
     @State private var updateMessage: String = ""
@@ -113,6 +114,9 @@ struct DeviceDetailView: View {
         }
         .navigationTitle(device.name)
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear(){
+            print(device.deviceId)
+        }
     }
 
     private func toggleDeviceStatus() {
@@ -122,8 +126,7 @@ struct DeviceDetailView: View {
     }
 
     private func updateDeviceNameInFirebase() {
-        let deviceService = DeviceService()
-        deviceService.updateDeviceName(device.id, name: device.name) { success in
+        FirebaseManager.shared.updateDeviceName(accountId, device.id, name: device.name) { success in
             if success {
                 updateMessage = "Device name updated successfully!" // Set success message
                 isEditing = false // Exit edit mode after successful update
@@ -134,15 +137,13 @@ struct DeviceDetailView: View {
     }
 
     private func loadHistory() {
-        let deviceService = DeviceService()
-        deviceService.fetchHistory(for: device.deviceId) { fetchedHistory in
+        FirebaseManager.shared.fetchHistory(for: device.deviceId) { fetchedHistory in
             self.history = fetchedHistory
             isHistoryLoaded = true // Mark history as loaded
         }
     }
 
     private func updateDeviceStatusInFirebase() {
-        let deviceService = DeviceService()
-        deviceService.updateDeviceStatus(device.id, status: device.status) // Update status in Firebase
+        FirebaseManager.shared.updateDeviceStatus(accountId, device.id, status: device.status) // Update status in Firebase
     }
 }

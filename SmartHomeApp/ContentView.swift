@@ -23,7 +23,7 @@ struct ContentView: View {
                     Text("Status: \(userProfile.status)")
                     
                     List(devices) { device in
-                        NavigationLink(destination: DeviceDetailView(device: device)) {
+                        NavigationLink(destination: DeviceDetailView(accountId: userId, device: device)) {
                             HStack {
                                 Text(device.name)
                                 Spacer()
