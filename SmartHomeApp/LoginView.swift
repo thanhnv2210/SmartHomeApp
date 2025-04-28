@@ -40,7 +40,7 @@ struct LoginView: View {
     }
 
     private func loginUser() {
-        print("Login user with email: \(email), password: \(password)")
+        print("Login user with email: \(email)")
         Auth.auth().signIn(withEmail: email, password: password) { (authResult, error) in
             if let error = error {
                 errorMessage = error.localizedDescription

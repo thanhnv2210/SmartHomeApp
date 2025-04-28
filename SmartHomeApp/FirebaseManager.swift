@@ -59,7 +59,7 @@ class FirebaseManager {
             guard let profileData = snapshot.value as? [String: Any],
                   let accountName = profileData["accountName"] as? String,
                   let name = profileData["name"] as? String,
-                  let id = profileData["id"] as? String,
+                  let id = snapshot.key as? String,
                   let createDateString = profileData["create_datetime"] as? String,
                   let status = profileData["status"] as? String,
                   let activeDevices = profileData["active_devices"] as? Int,
@@ -67,6 +67,7 @@ class FirebaseManager {
                   let packageType = profileData["package_type"] as? String,
                   let createDate = ISO8601DateFormatter().date(from: createDateString) else {
                 print("⚠️ Failed to parse user profile for userId: \(userId)")
+                print(snapshot.value as Any)
                 completion(nil) // Return nil if parsing fails
                 return
             }
@@ -103,6 +104,35 @@ class FirebaseManager {
             } else {
                 print("User profile saved successfully for user ID: \(userProfile.id)")
                 completion(true) // Indicate success
+            }
+        }
+    }
+    
+    func loadDevices(userId: String, completion: @escaping ([Device]) -> Void) {
+        ref.child("devices").child(userId).observeSingleEvent(of: .value) { snapshot in
+            var fetchedDevices: [Device] = []
+            let group = DispatchGroup() // Use DispatchGroup to wait for history fetching
+
+            if let devicesDict = snapshot.value as? [String: Any] {
+                for (key, value) in devicesDict {
+                    if let deviceData = value as? [String: Any],
+                       let name = deviceData["name"] as? String,
+                       let status = deviceData["status"] as? String,
+                       let lastWatered = deviceData["last_watered"] as? String {
+
+                        // Create the Device object with the fetched data
+                        let device = Device(
+                            deviceId: key,
+                            name: name,
+                            status: status,
+                            lastWatered: lastWatered,
+                        )
+                        fetchedDevices.append(device)
+                    }
+                }
+                completion(fetchedDevices)
+            } else {
+                completion([]) // Return an empty array if fetch fails
             }
         }
     }

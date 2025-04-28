@@ -10,49 +10,6 @@ import FirebaseDatabase
 // Class to handle Firebase operations for devices
 class DeviceService {
     private let ref = Database.database().reference().child("devices")
-
-    // Load devices from Firebase
-    func loadDevices(completion: @escaping ([Device]) -> Void) {
-        ref.observeSingleEvent(of: .value) { snapshot in
-            var fetchedDevices: [Device] = []
-            let group = DispatchGroup() // Use DispatchGroup to wait for history fetching
-
-            if let devicesDict = snapshot.value as? [String: Any] {
-                for (key, value) in devicesDict {
-                    if let deviceData = value as? [String: Any],
-                       let name = deviceData["name"] as? String,
-                       let status = deviceData["status"] as? String,
-                       let lastWatered = deviceData["last_watered"] as? String {
-
-                        // Create the Device object with the fetched data
-                        let device = Device(
-                            deviceId: key, // Use the Firebase key as the deviceId
-                            name: name,
-                            status: status,
-                            lastWatered: lastWatered,
-                            //schedules: schedules // Use the list of schedules (which may be empty)
-                        )
-                        fetchedDevices.append(device)
-                        // Optionally, fetch history for this device
-//                        group.enter()
-//                        self.fetchHistory(for: key) { history in
-//                            var deviceWithHistory = device
-//                            deviceWithHistory.history = history
-//                            fetchedDevices.append(deviceWithHistory)
-//                            group.leave()
-//                        }
-                    }
-                }
-
-                // Notify completion when all histories have been fetched
-                group.notify(queue: .main) {
-                    completion(fetchedDevices) // Return all fetched devices
-                }
-            } else {
-                completion([]) // Return an empty array if fetch fails
-            }
-        }
-    }
     
     // Fetch history for a specific device
     public func fetchHistory(for deviceId: String, completion: @escaping ([String: Device.HistoryEntry]) -> Void) {

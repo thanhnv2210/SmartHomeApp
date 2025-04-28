@@ -24,6 +24,8 @@ struct SmartHomeAppApp: App {
     
     init(){
         FirebaseApp.configure()
+        // Initialize ConfigManager
+        let _ = ConfigManager.shared // Ensure ConfigManager is initialized
     }
     var body: some Scene {
         WindowGroup {

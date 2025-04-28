@@ -38,12 +38,15 @@ struct ContentView: View {
                         loadUserProfile(userId: uid) // Load the user profile
                     })) // Pass the callback
                 }
-                
-                
             }
             .navigationTitle("Smart Home Devices")
-            .onAppear {
-//                loadDeviceData()
+            .onAppear {//run as init function
+                if !ConfigManager.shared.isAuthenticationRequired {
+                    // Load user profile using a test ID if authentication is not required.
+                    userId = ConfigManager.shared.appTestId
+                    print("loading test user profile with ID: \(userId)")
+                    loadUserProfile(userId: userId)
+                }
             }
         }
         .sheet(isPresented: $showingProfileCreation) {
@@ -51,12 +54,13 @@ struct ContentView: View {
         }
     }
     
+    
     private func loadUserProfile(userId: String) {
         print("Loading user profile for \(userId)")
         FirebaseManager.shared.loadUserProfile(userId: userId) { profile in
             self.userProfile = profile
             if profile != nil {
-                loadDeviceData() // Load devices only after the user profile is successfully loaded
+                loadDeviceData(userId: userId) // Load devices only after the user profile is successfully loaded
             } else {
                 print( "No user profile Found!")
                 // If no profile found, navigate to profile creation
@@ -65,9 +69,8 @@ struct ContentView: View {
         }
     }
 
-    private func loadDeviceData() {
-        let deviceService = DeviceService()
-        deviceService.loadDevices { fetchedDevices in
+    private func loadDeviceData(userId: String) {
+        FirebaseManager.shared.loadDevices(userId: userId) { fetchedDevices in
             devices = fetchedDevices
             print(devices)
         }
