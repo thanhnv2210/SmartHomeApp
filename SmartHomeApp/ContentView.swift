@@ -32,6 +32,16 @@ struct ContentView: View {
                             }
                         }
                     }
+                    // Add Device Button
+                    NavigationLink(destination: DeviceSearchView()) {
+                        HStack {
+                            Image(systemName: "plus.app") // Icon for adding a device
+                                .resizable()
+                                .frame(width: 24, height: 24)
+                            Text("Add Device")
+                        }
+                    }
+                    .padding()
                 } else {
                     NavigationLink("Login", destination: LoginView(onLoginSuccess: { uid in
                         userId = uid // Capture the user's UID
