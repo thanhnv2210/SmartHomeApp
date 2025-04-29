@@ -7,10 +7,9 @@
 
 import Foundation
 import CoreBluetooth
-import Combine
 
 class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate, ObservableObject {
-    @Published var discoveredPeripherals: [CBPeripheral] = [] // Published property to notify views of changes
+    @Published var discoveredPeripherals: [CBPeripheral] = [] // To store discovered Bluetooth devices
     private var centralManager: CBCentralManager!
     private var connectedPeripheral: CBPeripheral?
 
@@ -24,6 +23,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
             print("Bluetooth is not powered on.")
             return
         }
+        // Start scanning for peripherals
         centralManager.scanForPeripherals(withServices: nil, options: nil)
         print("Scanning for devices...")
     }
@@ -37,10 +37,10 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
         case .poweredOn:
+            print("Bluetooth is powered on.")
             startScanning() // Start scanning if Bluetooth is powered
         case .poweredOff:
             print("Bluetooth is powered off.")
-            stopScanning()
         case .resetting:
             print("Bluetooth is resetting.")
         case .unauthorized:
@@ -57,9 +57,10 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         print("Discovered \(peripheral.name ?? "Unknown device") at \(RSSI)")
 
-        // Check if peripheral is already discovered
-        guard !discoveredPeripherals.contains(peripheral) else { return }
-        discoveredPeripherals.append(peripheral)
+        // Store discovered peripheral
+        if !discoveredPeripherals.contains(peripheral) {
+            discoveredPeripherals.append(peripheral)
+        }
     }
 
     func connect(to peripheral: CBPeripheral) {
@@ -70,6 +71,7 @@ class BluetoothManager: NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("Connected to \(peripheral.name ?? "unknown peripheral")")
+        // Discover peripheral services if required
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {

@@ -13,6 +13,7 @@
 		E8A94B212DBE801D00E79349 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = E8A94B202DBE801D00E79349 /* FirebaseAuth */; };
 		E8A94B232DBE818200E79349 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = E8A94B222DBE818200E79349 /* GoogleService-Info.plist */; };
 		E8A94B252DBE869300E79349 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = E8A94B242DBE869300E79349 /* FirebaseCore */; };
+		E8A94B332DC15EDC00E79349 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E8A94B312DC15EC200E79349 /* CoreBluetooth.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,11 +39,25 @@
 		E8A94A482DBDC64700E79349 /* SmartHomeAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SmartHomeAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8A94B1A2DBE7E4D00E79349 /* Config.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Config.plist; sourceTree = "<group>"; };
 		E8A94B222DBE818200E79349 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		E8A94B312DC15EC200E79349 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E8A94B372DC15FB500E79349 /* Exceptions for "SmartHomeApp" folder in "SmartHomeApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = E8A94A302DBDC64600E79349 /* SmartHomeApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E8A94A332DBDC64600E79349 /* SmartHomeApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E8A94B372DC15FB500E79349 /* Exceptions for "SmartHomeApp" folder in "SmartHomeApp" target */,
+			);
 			path = SmartHomeApp;
 			sourceTree = "<group>";
 		};
@@ -66,6 +81,7 @@
 				E8A94A612DBDCCBA00E79349 /* FirebaseDatabase in Frameworks */,
 				E8A94B212DBE801D00E79349 /* FirebaseAuth in Frameworks */,
 				E8A94B252DBE869300E79349 /* FirebaseCore in Frameworks */,
+				E8A94B332DC15EDC00E79349 /* CoreBluetooth.framework in Frameworks */,
 				E8A94A5F2DBDCCBA00E79349 /* FirebaseAnalytics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -96,6 +112,7 @@
 				E8A94A4B2DBDC64700E79349 /* SmartHomeAppUITests */,
 				E8A94A322DBDC64600E79349 /* Products */,
 				E8A94B222DBE818200E79349 /* GoogleService-Info.plist */,
+				E8A94B302DC15EC100E79349 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -107,6 +124,14 @@
 				E8A94A482DBDC64700E79349 /* SmartHomeAppUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		E8A94B302DC15EC100E79349 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E8A94B312DC15EC200E79349 /* CoreBluetooth.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -426,6 +451,12 @@
 				DEVELOPMENT_TEAM = R6B94B8A4D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SmartHomeApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "SmartHomeApp Name";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "This app requires Bluetooth access to discover and connect to IoT devices.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "This app needs access to Bluetooth to connect to nearby IoT devices.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "This app requires local network access to communicate with Wi-Fi connected devices.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -454,6 +485,12 @@
 				DEVELOPMENT_TEAM = R6B94B8A4D;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SmartHomeApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "SmartHomeApp Name";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "This app requires Bluetooth access to discover and connect to IoT devices.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "This app needs access to Bluetooth to connect to nearby IoT devices.";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "This app requires local network access to communicate with Wi-Fi connected devices.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
