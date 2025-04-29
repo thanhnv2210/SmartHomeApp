@@ -8,10 +8,8 @@
 import SwiftUI
 
 struct DeviceSearchView: View {
-    @State private var discoveredDevices: [String] = [] // Array to hold discovered device names
-    @State private var isPairing: Bool = false // To indicate if pairing is in progress
-    @State private var selectedDevice: String? = nil // To hold the currently selected device
-    
+    @StateObject private var bluetoothManager = BluetoothManager() // Use @StateObject to manage BluetoothManager
+
     var body: some View {
         VStack {
             Text("Searching for Devices...")
@@ -19,12 +17,12 @@ struct DeviceSearchView: View {
                 .padding()
 
             // List to show discovered devices
-            List(discoveredDevices, id: \.self) { deviceName in
+            List(bluetoothManager.discoveredPeripherals, id: \.identifier) { peripheral in
                 HStack {
-                    Text(deviceName)
+                    Text(peripheral.name ?? "Unknown device")
                     Spacer()
                     Button(action: {
-                        pairDevice(deviceName) // Pair device on button click
+                        bluetoothManager.connect(to: peripheral) // Call connect when "Pair" is tapped
                     }) {
                         Text("Pair")
                             .foregroundColor(.blue)
@@ -32,45 +30,17 @@ struct DeviceSearchView: View {
                 }
             }
 
-            // Optional: Add a button to simulate discovering devices
             Button("Start Discovery") {
-                startDeviceDiscovery() // Start the discovery process
+                bluetoothManager.startScanning() // Start scanning for devices
             }
             .padding()
         }
         .navigationTitle("Device Search")
         .onAppear {
-            startDeviceDiscovery() // Start searching for devices when the view appears
+            bluetoothManager.startScanning() // Start discovering devices when the view appears
         }
-    }
-
-    private func startDeviceDiscovery() {
-        // Simulate discovering devices. You can customize this list as needed.
-        // This could include existing device names like "AirPods".
-        discoveredDevices = ["AirPods", "Device 1", "Device 2", "Device 3"] // Example devices
-    }
-
-    private func pairDevice(_ deviceName: String) {
-        if deviceName == "AirPods" {
-            // Simulate pairing with AirPods
-            print("Pairing with device: \(deviceName)")
-            // Indicate the pairing successful
-            isPairing = true
-            
-            // Add additional logic here to simulate pairing process (e.g., delay, UI updates)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { // Simulate a 2-second pairing process
-                print("\(deviceName) paired successfully!")
-                isPairing = false
-            }
-        } else {
-            // Logic for pairing other devices (if necessary)
-            print("Pairing with other device: \(deviceName)")
-            isPairing = true
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { // Simulate a 2-second pairing process
-                print("\(deviceName) paired successfully!")
-                isPairing = false
-            }
+        .onDisappear {
+            bluetoothManager.stopScanning() // Stop scanning when leaving the view
         }
     }
 }
