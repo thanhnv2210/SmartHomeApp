@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct DeviceSearchView: View {
-    @StateObject private var bluetoothManager = BluetoothManager() // Use @StateObject to manage BluetoothManager
+    @StateObject private var bluetoothManager = BluetoothManager() // Create an instance of BluetoothManager
 
     var body: some View {
         VStack {
@@ -19,10 +19,10 @@ struct DeviceSearchView: View {
             // List to show discovered devices
             List(bluetoothManager.discoveredPeripherals, id: \.identifier) { peripheral in
                 HStack {
-                    Text(peripheral.name ?? "Unknown device")
+                    Text(peripheral.name ?? "Unknown device") // Display device name
                     Spacer()
                     Button(action: {
-                        bluetoothManager.connect(to: peripheral) // Call connect when "Pair" is tapped
+                        bluetoothManager.connect(to: peripheral) // Connect when "Pair" is tapped
                     }) {
                         Text("Pair")
                             .foregroundColor(.blue)
@@ -43,8 +43,4 @@ struct DeviceSearchView: View {
             bluetoothManager.stopScanning() // Stop scanning when leaving the view
         }
     }
-}
-
-#Preview {
-    DeviceSearchView()
 }
